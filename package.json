@@ -4,7 +4,7 @@
     "description": "base game",
     "main": "app.js",
     "scripts": {
-        "start": "node ./app.js"
+        "start": "node app.js"
     },
     "author": "mmmaxou",
     "license": "ISC",
@@ -36,6 +36,12 @@
         "vinyl-source-stream": "^1.1.0"
     },
     "dependencies": {
-        "toastr": "^2.1.2"
+        "toastr": "^2.1.2",
+        "express": "^4.15.2",
+        "mongojs": "^2.4.0",
+        "socket.io": "^1.7.3"
+    },
+    "engines": {
+        "node": "6.10.2"
     }
 }

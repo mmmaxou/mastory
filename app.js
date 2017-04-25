@@ -1,4 +1,4 @@
-var DEPLOY = false
+var DEPLOY = true
 var DIRECT_CONNECT = true;
 var mongojs, db;
 if (!DEPLOY) {

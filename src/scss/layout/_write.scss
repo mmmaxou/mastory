@@ -1,0 +1,13 @@
+#write {
+    form {
+        width: 90%;
+        input,
+        textarea {
+            display: inline;
+            width: 100%;
+        }
+        textarea {
+            height: 60vh;
+        }
+    }
+}

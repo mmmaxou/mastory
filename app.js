@@ -3,13 +3,14 @@ var DIRECT_CONNECT = true;
 var mongojs, db;
 if (!DEPLOY) {
     // Off Line
+    mongojs = require('mongojs')
+    db = mongojs('localhost:27017/mastory', ['account', 'story'])
+} else {
+    // ON line
     var mLabUser = "mmmaxou"
     var mLabpass = "azeazeaze1"
-
-    mongojs = require('mongojs')
     db = mongojs('ds117931.mlab.com:17931/mastory', ['account', 'story'])
-} else {
-    db = null;
+
 }
 
 //init

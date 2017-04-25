@@ -4,7 +4,7 @@
     "description": "base game",
     "main": "app.js",
     "scripts": {
-        "start": "gulp"
+        "start": "node ./app.js"
     },
     "author": "mmmaxou",
     "license": "ISC",

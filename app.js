@@ -10,7 +10,7 @@ if (!DEPLOY) {
     var mLabUser = "mmmaxou"
     var mLabpass = "azeazeaze1"
     mongojs = require('mongojs')
-    db = mongojs('ds117931.mlab.com:17931/mastory', ['account', 'story'])
+    db = mongojs('mongodb://' + mLabUser + ':' + mLabpass + '@ds117931.mlab.com:17931/mastory', ['account', 'story'])
 
 }
 

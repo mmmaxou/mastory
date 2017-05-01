@@ -92,9 +92,17 @@ var initSockets = function () {
 
         socket.on("entry", function (data) {
 
+            for (var i in data) {
+                data[i] = escapeHtml(data[i])
+            }
+            if (!data.user) {
+                data.user = "Anonymous"
+            }
+
             var collection = db.collection("story");
             insertDocuments(collection, {
-                text: data
+                text: data.text,
+                user: data.user,
             })
             emitToAll(data)
 
@@ -103,6 +111,7 @@ var initSockets = function () {
     })
 
 }
+
 var emitDB = function (socket) {
 
     var collection = db.collection("story")
@@ -119,6 +128,14 @@ var emitToAll = function (data) {
         socket.emit("update", data)
     }
 
+}
+var escapeHtml = function (text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 var findDocuments = function (collection, callback) {
     // Find some documents

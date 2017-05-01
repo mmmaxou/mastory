@@ -1,13 +1,33 @@
 #write {
-    form {
-        width: 90%;
-        input,
-        textarea {
-            display: inline;
+    #caption {
+        color: $color-main;
+    }
+    #rule {
+        color: $color-main-darker;
+    }
+    .wrapper {
+        margin-left: 7.5px;
+        display: flex;
+        flex-direction: column;
+        form {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
             width: 100%;
-        }
-        textarea {
-            height: 60vh;
+            position: relative;
+            input,
+            textarea {
+                display: inline;
+                width: 100%;
+            }
+            textarea {
+                flex-grow: 1;
+            }
+            #textarea-info {
+                position: absolute;
+                top: -20px;
+                right: 0;
+            }
         }
     }
 }

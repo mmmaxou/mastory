@@ -1,0 +1,19 @@
+.upperlink {
+    text-transform: lowercase;
+    font-variant: small-caps;
+    position: relative;
+    color: blue;
+    .number {
+        position: absolute;
+        top: -20px;
+        right: -10px;
+        cursor: pointer;
+        font-size: 0.8em;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    .tooltip {
+        display: none;
+    }
+}

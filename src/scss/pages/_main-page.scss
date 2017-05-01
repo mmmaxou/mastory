@@ -1,3 +1,8 @@
+body {
+    font-weight: 300;
+    line-height: 1.4em;
+}
+
 #full-body {
     position: absolute;
     width: 100vw;
@@ -9,7 +14,10 @@
     float: left;
     width: 50%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+}
+
+h1 {
+    font-weight: 500;
+    font-size: 1.2em;
+    color: $color-main-darker;
 }

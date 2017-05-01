@@ -14317,25 +14317,35 @@ $(document).ready(function () {
 
     $('#write form').submit(function (e) {
         e.preventDefault()
-        data = $("#write textarea").val()
-        if (!data) {
+        data = {}
+        data.text = $("#write textarea").val()
+        if (!data.text) {
             toastr["error"]("The input should not be empty");
         }
+        data.user = $('#write input[type="text"]').val()
 
         socket.emit("entry", data);
     })
+    countTextarea($('#write textarea'))
+    $('#write textarea')
+        .keyup(function () {
+            countTextarea($(this))
+        })
+        .change(function () {
+            countTextarea($(this))
+        })
 
 })
 
+var messageNumber = 1
 socket.on("connect", function (data) {
-
-    $('#display').children().remove()
 
 })
 socket.on("init", function (data) {
+    $('#loading').remove()
 
     for (var a in data) {
-        displayLine(data[a].text)
+        displayLine(data[a])
     }
 
 })
@@ -14345,12 +14355,35 @@ socket.on("update", function (data) {
 
 })
 
-var displayLine = function (line) {
-    var entryContent = '<div class="entry-content">' + line + '</div>'
-    var entry = '<div class="entry">' + entryContent + '</div>'
-    $('#display').append(entry)
+
+// helpers
+var displayLine = function (data) {
+    var entryUser = '<span class="upperlink"><a class="number" data-tooltip="Written by ' + data.user + '">' + (messageNumber++) + '</a></span>'
+
+    var entryContent = '<span class="entry-content">' + data.text + entryUser + '</span>'
+    $('#display .wrapper').append(entryContent)
+    $('[data-tooltip!=""]').qtip({
+        content: {
+            attr: 'data-tooltip'
+        },
+        style: {
+            classes: 'qtip-blue qtip-tipsy'
+        }
+    })
+
+
+    //Scroll if necessary
     var display = document.getElementById("display");
     display.scrollTop = display.scrollHeight;
+}
+var countTextarea = function (elem) {
+    var l = elem.val().length
+    if (l <= 800) {
+        $("#textarea-info").html((800 - l) + " caracters")
+    } else {
+        elem.val(elem.val().substr(0, 800))
+        $("#textarea-info").html("0 caracters")
+    }
 }
 
 },{"toastr":14,"trianglify":18}]},{},[19]);

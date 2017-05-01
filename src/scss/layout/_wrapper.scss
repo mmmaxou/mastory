@@ -1,1 +1,12 @@
-
+.wrapper {
+    padding: 25px;
+    margin: 25px;
+    background-color: white;
+    text-align: justify;
+    height: calc(100vh - 100px);
+    max-width: 100%;
+    max-height: calc(100vh - 100px);
+    .line {
+        margin-bottom: 15px;
+    }
+}

@@ -1,0 +1,14 @@
+.hovered {
+    position: relative;
+    animation: hover 400ms;
+    background-color: $color-main-100;
+}
+
+@include keyframes(hover) {
+    from {
+        background-color: $color-main-0;
+    }
+    to {
+        background-color: $color-main-100;
+    }
+}

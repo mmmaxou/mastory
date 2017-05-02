@@ -1,11 +1,20 @@
-.wrapper {
-    padding: 25px;
+.container {
+    padding: $padding-border-page;
     margin: 25px;
     background-color: white;
     text-align: justify;
     height: calc(100vh - 100px);
     max-width: 100%;
     max-height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    .wrapper {
+        display: none;
+        flex-grow: 1;
+        &.active {
+            display: block;
+        }
+    }
     .line {
         margin-bottom: 15px;
     }

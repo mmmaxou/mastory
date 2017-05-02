@@ -11,6 +11,16 @@ input[type='submit'] {
     background-color: $color-main;
     color: white;
     text-transform: uppercase;
+    cursor: pointer;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    transition: all 400ms ease;
+    &:hover {
+        background-color: white;
+        color: $color-main;
+        @include prefix('box-shadow', 'inset 0px 0px 0px 5px #3eaef4', webkit moz)
+    }
 }
 
 textarea {

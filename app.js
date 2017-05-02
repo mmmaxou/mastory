@@ -97,6 +97,11 @@ var initSockets = function () {
             }
             if (!data.user) {
                 data.user = "Anonymous"
+                var answer = {
+                    type: "warning",
+                    message: "You haven't given any username so you will be referred as Anonymous."
+                }
+                socket.emit('toastr', answer)
             }
 
             var collection = db.collection("story");

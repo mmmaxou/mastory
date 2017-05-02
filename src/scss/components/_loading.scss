@@ -22,7 +22,7 @@
     }
 }
 
-@keyframes loading {
+@include keyframes (loading) {
     0% {
         transform: translateY(0);
     }

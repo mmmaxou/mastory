@@ -1,1 +1,62 @@
+/*
+// usage :
 
+.foo {
+  @include clearfix;
+}
+*/
+
+@mixin clearfix {
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+
+/*
+// usage :
+
+.foo {
+  @include opacity(.4);
+}
+*/
+
+@mixin opacity($opacity) {
+    opacity: $opacity;
+    $opacity-ie: $opacity * 100;
+    filter: alpha(opacity=$opacity-ie); //IE8
+}
+
+
+/*
+// usage :
+
+html {
+  @include prefix('box-sizing', 'border-box', moz webkit);
+}
+*/
+
+@mixin prefix($property, $value, $vendors: webkit moz ms o, $default: true) {
+    @if $vendors {
+        @each $vendor in $vendors {
+            #{"-" + $vendor + "-" + $property}: #{$value};
+        }
+    }
+    @if $default {
+        #{$property}: #{$value};
+    }
+}
+
+@mixin keyframes($name) {
+    @-webkit-keyframes #{$name} {
+        @content;
+    }
+    @-moz-keyframes #{$name} {
+        @content;
+    }
+    @keyframes #{$name} {
+        @content;
+    }
+}

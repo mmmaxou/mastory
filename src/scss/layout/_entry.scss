@@ -1,13 +1,21 @@
 #display {
     display: inline;
-    justify-content: flex-end;
     max-height: 100vh;
+    position: relative;
     .entry-content {
         position: relative;
         margin-right: 15px;
     }
-    .wrapper {
+    .container {
         margin-right: 7.5px;
-        overflow-y: scroll;
+    }
+    .wrapper {}
+    .bottom {
+        width: 100%;
+        order: 1;
+        .bottom-wrapper {
+            display: flex;
+            justify-content: space-between;
+        }
     }
 }

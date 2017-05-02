@@ -5,10 +5,8 @@
     #rule {
         color: $color-main-darker;
     }
-    .wrapper {
+    .container {
         margin-left: 7.5px;
-        display: flex;
-        flex-direction: column;
         form {
             flex-grow: 1;
             display: flex;

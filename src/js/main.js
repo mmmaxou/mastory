@@ -71,8 +71,7 @@ var pageNumber = 1
 
 Text = function (options, parent) {
     var self = {}
-    self.id = Text.nextId
-    Text.nextId++;
+    self.id = options._id
     self.text = options.text
     self.user = options.user || "Anonymous"
     self.page = parent.id || 0;
@@ -81,12 +80,17 @@ Text = function (options, parent) {
     self.display = function () {
         var entryUser = '<span class="upperlink"><a class="number" data-tooltip="Written by ' + self.user + '">' + (self.id) + '</a></span>';
 
-        var entryContent = '<span class="entry-content p' + self.page + ' id' + self.id + '">' + self.text + entryUser + '</span>';
+        var entryContent = '<span class="entry-content p' + self.page + ' id' + self.id + '" data_order="' + self.id + '">' + self.text + entryUser + '</span>';
 
         $('#page' + self.page).append(entryContent)
         self.displayed = true;
 
-        $('#page' + self.page + ' [data-tooltip!=""]').qtip({
+
+
+        var selector = '.p' + self.page + '.id' + self.id
+        self.dom = $(selector)
+
+        $(selector + ' [data-tooltip!=""]').qtip({
             content: {
                 attr: 'data-tooltip'
             },
@@ -94,9 +98,6 @@ Text = function (options, parent) {
                 classes: 'qtip-blue qtip-tipsy'
             }
         })
-
-        var selector = '.p' + self.page + '.id' + self.id
-        self.dom = $(selector)
     }
     self.undisplay = function () {
         self.displayed = false;
@@ -121,8 +122,6 @@ Text = function (options, parent) {
     return self
 }
 Text.list = {}
-Text.nextId = 1
-
 
 /* ############# Page ############## */
 
@@ -145,6 +144,13 @@ Page = function (data = {}) {
     }
     self.createDom()
     self.maxLength = null;
+    self.modified = true;
+
+    /*
+
+        TODO ; Add a "modified" property that change when something move and if not changed display directly
+        
+    */
 
     self.reduceContent = function (cpt = 0) {
         if (cpt > 20) {
@@ -156,6 +162,7 @@ Page = function (data = {}) {
         if (self.checkOverflow()) {
             self.giveLastEntry()
             self.reduceContent(cpt)
+            self.bind()
         }
     }
     self.addContent = function (cpt = 0) {
@@ -170,6 +177,10 @@ Page = function (data = {}) {
 
     }
     self.resize = function () {
+        if (!self.modified) {
+            return
+        }
+
         // Content too long
         if (self.checkOverflow()) {
             self.reduceContent()
@@ -178,6 +189,7 @@ Page = function (data = {}) {
         }
 
         self.reorder()
+        self.modified = false;
     }
     self.reorder = function () {
         if (self.isOrdered()) {
@@ -205,7 +217,7 @@ Page = function (data = {}) {
 
             // work only for the current configuration :
             // "entry-content p1 id17"
-            var currentId = elt.attr('class').substring(16).match(/\d+/)[0]
+            var currentId = elt.attr('data-order')
             if (id == null) {
                 id = currentId
             }
@@ -248,11 +260,15 @@ Page = function (data = {}) {
     }
     self.setActive = function () {
         self.dom.addClass("active")
+        $('#pager').text(self.id + 1)
         self.active = true;
         Page.active = self;
         self.reduceContent()
         self.reorder()
         self.bind()
+        if (!self.next()) {
+            self.requestChunk()
+        }
 
     }
     self.displayAllText = function () {
@@ -262,6 +278,12 @@ Page = function (data = {}) {
         }
     }
 
+    self.requestChunk = function () {
+        if (ALLDATAGATHERED) {
+            return
+        }
+        socket.emit("requestChunk", self.getLastText().id + 1)
+    }
     self.appendEntry = function (data) {
         var text = new Text(data, self)
         self.text[text.id] = text
@@ -286,7 +308,7 @@ Page = function (data = {}) {
         self.getLastText()
             .changePage(self.next())
         delete self.text[id]
-
+        self.modified = true;
     }
     self.stealFirstEntry = function () {
 
@@ -296,6 +318,7 @@ Page = function (data = {}) {
         }
         text.changePage(self)
         delete self.next().text[text.id]
+        self.modified = true;
         if (self.checkOverflow()) {
             self.giveLastEntry()
             // Plus de place, on arrete
@@ -402,14 +425,34 @@ Page.letterCount = 2000;
 socket.on("connect", function (data) {
     var page = Page()
 })
-socket.on("init", function (data) {
+socket.on("chunk", function (data) {
     $('#loading').remove()
 
+    console.log(data)
+
+    var array = []
     for (var a in data) {
         var entry = data[a]
+        //        array.push(entry)
         Page.getLast().appendEntry(entry)
+
     }
 
+    //    var i = 0;
+    //
+    //    function loop() {
+    //
+    //        //PAUSE
+    //        setTimeout(function () {
+    //            Page.getLast().appendEntry(array[i])
+    //            i++
+    //            if (i < array.length) {
+    //                loop()
+    //            }
+    //        }, 1)
+    //    }
+    //
+    //    loop()
 })
 socket.on("toastr", function (data) {
     if (data.type && data.message) {
@@ -419,8 +462,12 @@ socket.on("toastr", function (data) {
 socket.on("entry", function (data) {
     Page.getLast().appendEntry(data)
 })
+socket.on("allDataGathered", function () {
+    ALLDATAGATHERED = true
+})
 
 var LETTER_COUNT = 0;
+var ALLDATAGATHERED = false
 // helpers
 var countTextarea = function (elem) {
     var l = elem.val().length
@@ -431,3 +478,10 @@ var countTextarea = function (elem) {
         $("#textarea-info").html("0 caracters")
     }
 }
+
+server = function (command) {
+    socket.emit("command", command)
+}
+socket.on('commandResult', function (data) {
+    console.log(data)
+})

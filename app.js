@@ -36,7 +36,6 @@ app.use('/build', express.static(__dirname + '/build'))
 serv.listen(process.env.PORT || 2000)
 console.log("Server started")
 
-
 var SOCKET_LIST = {}
 var DEBUG = true;
 
@@ -79,6 +78,19 @@ var addUser = function (data, callback) {
 
 var initSockets = function () {
 
+    var DATABASE_COUNT;
+    getLastDocument(db.collection("story"), function (doc) {
+        if (doc.length == 0) {
+            DATABASE_COUNT = 1
+            //console.log("new")
+        } else {
+            DATABASE_COUNT = doc[0]._id + 1
+            //console.log("exist")
+            //console.log(doc)
+        }
+        //console.log(DATABASE_COUNT)
+    })
+
     var io = require('socket.io')(serv, {})
     io.sockets.on('connection', function (socket) {
 
@@ -86,7 +98,7 @@ var initSockets = function () {
         SOCKET_LIST[id] = socket
 
         // Send the whole Database
-        emitDB(socket)
+        sendChunk(socket, 1)
 
         // Send the last entry to all
 
@@ -95,6 +107,7 @@ var initSockets = function () {
             for (var i in data) {
                 data[i] = escapeHtml(data[i])
             }
+            // Warn user
             if (!data.user) {
                 data.user = "Anonymous"
                 var answer = {
@@ -104,11 +117,14 @@ var initSockets = function () {
                 socket.emit('toastr', answer)
             }
 
-            var collection = db.collection("story");
-            insertDocuments(collection, {
+            var entry = {
+                _id: DATABASE_COUNT++,
                 text: data.text,
                 user: data.user,
-            })
+            }
+
+            var collection = db.collection("story");
+            insertDocuments(collection, entry)
 
             var answer = {
                 type: "success",
@@ -116,21 +132,57 @@ var initSockets = function () {
             }
             socket.emit('toastr', answer)
 
-            emitToAll(data)
+            emitToAll(entry)
 
         })
 
-    })
+        socket.on("requestChunk", function (id) {
+            sendChunk(socket, id)
+        })
 
+        socket.on("command", function (command) {
+            var res = eval(command)
+            socket.emit("commandResult", res)
+        })
+
+    })
+}
+
+var CHUNK_SIZE = 4000;
+var sendChunk = function (socket, id) {
+    var collection = db.collection("story")
+    var size = 0;
+    var data = []
+
+    function collect(id) {
+
+        getDocumentId(collection, id, function (doc) {
+            if (doc[0]) {
+                size += doc[0].text.length;
+                data.push(doc[0])
+                id++
+            } else {
+                socket.emit("chunk", data)
+                socket.emit("allDataGathered")
+                console.log("all data gathered")
+                return
+            }
+
+            if (size < CHUNK_SIZE) {
+                collect(id)
+            } else {
+                socket.emit("chunk", data)
+            }
+        })
+
+    }
+    collect(id)
 }
 
 var emitDB = function (socket) {
-
     var collection = db.collection("story")
     findDocuments(collection, function (data) {
-
-        socket.emit("init", data)
-
+        socket.emit("chunk", data)
     })
 }
 var emitToAll = function (data) {
@@ -153,14 +205,17 @@ var escapeHtml = function (text) {
 }
 var findDocuments = function (collection, callback) {
     // Find some documents
-    collection.find({}).toArray(function (err, docs) {
-        if (err) {
-            console.error("Error : " + err)
-            return
-        }
-        console.log("Found the records");
-        callback(docs);
-    });
+    collection
+        .find({})
+        .sort({
+            _id: 1
+        }).toArray(function (err, docs) {
+            if (err) {
+                console.error("Error : " + err)
+                return
+            }
+            callback(docs);
+        });
 }
 var insertDocuments = function (collection, data) {
     // Insert some documents
@@ -168,4 +223,33 @@ var insertDocuments = function (collection, data) {
         assert.equal(err, null);
         console.log("Inserted the data into the collection");
     });
+}
+var getLastDocument = function (collection, callback) {
+    collection
+        .find()
+        .limit(1)
+        .sort({
+            $natural: -1
+        })
+        .toArray(function (err, doc) {
+            if (err) {
+                console.error("Error : " + err)
+                callback(null)
+            }
+            callback(doc);
+        })
+
+}
+var getDocumentId = function (collection, id, callback) {
+    collection
+        .find({
+            _id: id
+        })
+        .toArray(function (err, doc) {
+            if (err) {
+                console.error("Error : " + err)
+                callback(null)
+            }
+            callback(doc);
+        })
 }

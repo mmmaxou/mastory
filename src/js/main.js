@@ -202,7 +202,6 @@ Page = function (data = {}) {
 
         function descend(elt, id = null) {
             cpt++
-            console.log("__________")
 
             // work only for the current configuration :
             // "entry-content p1 id17"
@@ -210,9 +209,6 @@ Page = function (data = {}) {
             if (id == null) {
                 id = currentId
             }
-            console.log("id:" + id)
-            console.log("currentId:" + currentId)
-            console.log(elt)
             if (currentId < id) {
                 ordered = false
             } else {
@@ -238,10 +234,12 @@ Page = function (data = {}) {
     self.displayNext = function () {
         self.setNotActive()
         self.next().setActive()
+        self.next().resize()
     }
     self.displayBefore = function () {
         self.setNotActive()
         self.before().setActive()
+        self.before().resize()
     }
 
     self.setNotActive = function () {
@@ -254,6 +252,8 @@ Page = function (data = {}) {
         Page.active = self;
         self.reduceContent()
         self.reorder()
+        self.bind()
+
     }
     self.displayAllText = function () {
         for (var i in self.text) {
@@ -264,14 +264,9 @@ Page = function (data = {}) {
 
     self.appendEntry = function (data) {
         var text = new Text(data, self)
-
-        if (self.full) {
-            self.next().text[text.id] = text
-        } else {
-            self.text[text.id] = text
-            text.display()
-            self.reduceContent()
-        }
+        self.text[text.id] = text
+        text.display()
+        self.reduceContent()
     }
 
     self.checkLastEntry = function () {
@@ -283,6 +278,9 @@ Page = function (data = {}) {
         }
     }
     self.giveLastEntry = function () {
+        if (!self.next()) {
+            new Page()
+        }
 
         var id = self.getLastText().id
         self.getLastText()
@@ -314,7 +312,7 @@ Page = function (data = {}) {
         if (page) {
             return page
         } else {
-            return Page()
+            return false
         }
     }
     self.before = function () {
@@ -366,6 +364,19 @@ Page = function (data = {}) {
     self.setCharLength = function () {
         self.maxLength = self.dom[0].innerText.self
     }
+    self.bind = function () {
+        if (!self.before()) {
+            $('#before').addClass('invisible')
+        } else {
+            $('#before').removeClass('invisible')
+        }
+
+        if (!self.next()) {
+            $('#next').addClass('invisible')
+        } else {
+            $('#next').removeClass('invisible')
+        }
+    }
 
     if (self.active) {
         Page.active = self
@@ -376,7 +387,8 @@ Page = function (data = {}) {
 Page.list = {}
 Page.active = null;
 Page.getLast = function () {
-    return Page.list[Page.nextId - 1]
+    var page = Page.list[Page.nextId - 1]
+    return page
 }
 Page.requestEntry = function () {
     socket.emit('requestEntry')
@@ -398,9 +410,6 @@ socket.on("init", function (data) {
         Page.getLast().appendEntry(entry)
     }
 
-})
-socket.on("update", function (data) {
-    displayLine(data)
 })
 socket.on("toastr", function (data) {
     if (data.type && data.message) {

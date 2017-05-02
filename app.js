@@ -109,6 +109,13 @@ var initSockets = function () {
                 text: data.text,
                 user: data.user,
             })
+
+            var answer = {
+                type: "success",
+                message: "Your story has successfully been submitted."
+            }
+            socket.emit('toastr', answer)
+
             emitToAll(data)
 
         })
@@ -129,8 +136,10 @@ var emitDB = function (socket) {
 var emitToAll = function (data) {
 
     for (var i in SOCKET_LIST) {
+        console.log("data emitted")
+        console.log(data)
         var socket = SOCKET_LIST[i]
-        socket.emit("update", data)
+        socket.emit("entry", data)
     }
 
 }

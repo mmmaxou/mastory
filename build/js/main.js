@@ -14310,6 +14310,7 @@ $(document).ready(function () {
     $(window).resize(function () {
 
         //Page
+        Page.active.modified = true
         Page.active.resize()
 
 
@@ -14708,7 +14709,7 @@ socket.on("connect", function (data) {
 socket.on("chunk", function (data) {
     $('#loading').remove()
 
-    console.log(data)
+    //console.log(data)
 
     var array = []
     for (var a in data) {

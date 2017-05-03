@@ -1,4 +1,4 @@
-var DEPLOY = true;
+var DEPLOY = false;
 var DIRECT_CONNECT = true;
 var db, url;
 var MongoClient = require('mongodb').MongoClient

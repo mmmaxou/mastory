@@ -328,7 +328,7 @@ table {
   .upperlink .number {
     position: absolute;
     top: -20px;
-    right: -10px;
+    padding-left: 5px;
     cursor: pointer;
     font-size: 0.8em; }
     .upperlink .number:hover {
@@ -502,7 +502,7 @@ textarea {
   position: relative; }
   #display .entry-content {
     position: relative;
-    margin-right: 15px; }
+    margin-right: 25px; }
   #display .container {
     margin-right: 7.5px; }
   #display .bottom {
@@ -520,10 +520,11 @@ textarea {
 
 body {
   font-weight: 300;
-  line-height: 1.4em; }
+  line-height: 1.4em;
+  font-size: 0.9em; }
 
 #full-body {
-  position: absolute;
+  position: fixed;
   width: 100vw;
   height: 100vh;
   z-index: -1;
@@ -534,6 +535,9 @@ body {
   float: left;
   width: 50%;
   height: 100%; }
+
+html {
+  font-size: 100%; }
 
 h1 {
   font-weight: 500;
@@ -597,3 +601,37 @@ p,
     width: 25em; }
   #toast-container > div.rtl{
     padding: 15px 50px 15px 15px; } }
+
+@media (max-width: 600px){
+  .container{
+    margin: 25px 0;
+    padding: 10px; }
+  #write .container{
+    margin: 25px 0;
+    padding: 10px; }
+  #display .container{
+    margin: 25px 0;
+    padding: 10px; } }
+
+@media (max-width: 1000px) and (min-width: 600px){
+  #write .container{
+    margin-left: 25px; }
+  #display .container{
+    margin-right: 25px; } }
+
+@media (max-width: 1000px){
+  #full-body{
+    top: 0;
+    left: 0; }
+  .half{
+    float: none;
+    width: 100%;
+    height: auto; } }
+
+@media (min-width: 800px){
+  html{
+    font-size: 112%; } }
+
+@media (min-width: 1200px){
+  html{
+    font-size: 126.5%; } }

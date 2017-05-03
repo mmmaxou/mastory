@@ -8,6 +8,10 @@
     max-height: calc(100vh - 100px);
     display: flex;
     flex-direction: column;
+    @media (max-width: 600px) {
+        margin: 25px 0;
+        padding: $padding-simple;
+    }
     .wrapper {
         display: none;
         flex-grow: 1;

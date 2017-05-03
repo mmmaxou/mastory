@@ -1,21 +1,49 @@
 body {
-    font-weight: 300;
+    font-weight: $font-light;
     line-height: 1.4em;
+    font-size: $font-size;
 }
 
 #full-body {
-    position: absolute;
+    position: fixed;
     width: 100vw;
     height: 100vh;
     z-index: -1;
     background: url("/build/images/pattern.png") no-repeat center;
     background-size: cover;
+    @media (max-width: 1000px) {
+        top: 0;
+        left: 0;
+    }
 }
 
 .half {
     float: left;
     width: 50%;
     height: 100%;
+    @media (max-width: 1000px) {
+        float: none;
+        width: 100%;
+        height: auto;
+    }
+}
+
+html {
+    font-size: 100%;
+}
+
+body {}
+
+@media (min-width: 800px) {
+    html {
+        font-size: 112%;
+    }
+}
+
+@media (min-width: 1200px) {
+    html {
+        font-size: 126.5%;
+    }
 }
 
 h1 {

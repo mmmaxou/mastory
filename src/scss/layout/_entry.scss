@@ -4,10 +4,17 @@
     position: relative;
     .entry-content {
         position: relative;
-        margin-right: 15px;
+        margin-right: 25px;
     }
     .container {
         margin-right: 7.5px;
+        @media (max-width: 1000px) and (min-width:600px) {
+            margin-right: 25px;
+        }
+        @media (max-width: 600px) {
+            margin: 25px 0;
+            padding: $padding-simple;
+        }
     }
     .wrapper {}
     .bottom {
